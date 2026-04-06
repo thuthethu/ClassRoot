@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Diário{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        .nee-tea, .nee-tea > td { background-color: #e1f5fe !important; }   /* Azul claro */
+        .nee-ahsd, .nee-ahsd > td { background-color: #fffde7 !important; } /* Amarelo claro */
+        .nee-tdah, .nee-tdah > td { background-color: #f1f8e9 !important; } /* Verde claro */
+        .nee-di, .nee-di > td { background-color: #fff3e0 !important; }     /* Laranja claro */
+        .nee-tod, .nee-tod > td { background-color: #ffebee !important; }    /* Vermelho claro */
+        .nee-tpac, .nee-tpac > td { background-color: #f3e5f5 !important; }  /* Roxo claro */
+        .nee-outros, .nee-outros > td { background-color: #f5f5f5 !important; } /* Cinza claro */
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">Diário Escolar</span>
+    </div>
+</nav>
+
+<div class="container">
+    {% block content %}
+    {% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

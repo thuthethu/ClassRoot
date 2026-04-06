@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Gestão NEE - Turma {{ turma.nome }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Gestão NEE - Turma {{ turma.nome }}</h2>
+
+<form method="POST" action="{{ url_for('salvar_nee', turma_id=turma.id) }}" enctype="multipart/form-data">
+
+<table class="table table-bordered align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Aluno</th>
+            <th>NEE (PCD)</th>
+            <th>Diagnóstico</th>
+            <th>CID</th>
+            <th>Relatório PDF</th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for aluno in alunos %}
+      <tr>
+          <td>
+              {{ aluno.nome }}
+              <input type="hidden" name="aluno_id_{{ aluno.id }}" value="1">
+          </td>
+          <td>
+              <input class="form-check-input" type="checkbox" name="pcd_{{ aluno.id }}" {% if aluno.pcd %}checked{% endif %}>
+          </td>
+          <td>
+              <input type="text" name="tipo_nee_{{ aluno.id }}" value="{{ aluno.tipo_nee or '' }}" class="form-control form-control-sm">
+          </td>
+          <td>
+              <input type="text" name="cid_{{ aluno.id }}" value="{{ aluno.cid or '' }}" class="form-control form-control-sm">
+          </td>
+          <td>
+              <input class="form-control form-control-sm mb-1" type="file" name="pdf_{{ aluno.id }}" accept=".pdf">
+              {% if aluno.tem_pdf %}
+              <a href="{{ url_for('static', filename='relatorios_nee/' ~ aluno.id ~ '.pdf') }}" target="_blank" class="btn btn-sm btn-info">Ver Atual</a>
+              {% endif %}
+          </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+</table>
+
+<button type="submit" class="btn btn-success">Salvar</button>
+<a href="{{ url_for('listar_turmas') }}" class="btn btn-secondary">Voltar</a>
+</form>
+
+{% endblock %}

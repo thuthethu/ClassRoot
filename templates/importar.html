@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Importar Dados{% endblock %}
+
+{% block content %}
+    <h1>Importar Dados</h1>
+    <hr>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-info">
+          {% for message in messages %}
+            <p class="mb-0">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% if abas_detectadas %}
+    <!-- PASSO 2: Seleção de Abas -->
+    <div class="card mb-4 border-primary shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0 h5">Múltiplas turmas detectadas!</h2>
+        </div>
+        <div class="card-body">
+            <p>Selecione abaixo quais turmas (abas) você deseja importar:</p>
+            <form action="{{ url_for('view_importar') }}" method="POST">
+                <input type="hidden" name="confirmar_importacao_abas" value="1">
+                <input type="hidden" name="temp_file" value="{{ temp_file }}">
+                
+                <div class="row mb-3">
+                    {% for aba in abas_detectadas %}
+                    <div class="col-md-3 mb-2">
+                        <div class="form-check card p-2">
+                            <input class="form-check-input ms-1" type="checkbox" name="abas_selecionadas" value="{{ aba }}" id="chk_{{ loop.index }}" checked>
+                            <label class="form-check-label ms-4" for="chk_{{ loop.index }}">
+                                <strong>{{ aba }}</strong>
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary px-4">Importar Selecionadas</button>
+                    <a href="{{ url_for('view_importar') }}" class="btn btn-outline-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card mb-4 shadow-sm {% if abas_detectadas %}opacity-50{% endif %}">
+        <div class="card-body">
+            <h2 class="card-title">1. Importar Alunos (.xlsx / .csv)</h2>
+            <form action="{{ url_for('view_importar') }}" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label font-weight-bold">Destino da Importação:</label>
+                    <select name="turma_id_existente" id="turma_selector" class="form-select" onchange="toggleTurmaInput()">
+                        <option value="nova">-- CRIAR NOVA TURMA --</option>
+                        {% for t in turmas %}
+                        <option value="{{ t.id }}">{{ t.nome }} ({{ t.ano }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div id="new_turma_section" class="mb-3">
+                    <label for="nome_turma" class="form-label">Nome da Nova Turma (se houver apenas uma no arquivo):</label>
+                    <input type="text" name="nome_turma" id="nome_turma" class="form-control" placeholder="Ex: 8A">
+                </div>
+
+                <div class="mb-3">
+                    <label for="xlsx" class="form-label font-weight-bold">Arquivo de Planilha:</label>
+                    <input type="file" name="xlsx" class="form-control" accept=".xlsx, .csv" required>
+                    <small class="text-muted">Dica: Se o arquivo tiver várias abas, você poderá escolher quais importar no próximo passo.</small>
+                </div>
+
+                <button type="submit" class="btn btn-success px-4" {% if abas_detectadas %}disabled{% endif %}>Analisar Arquivo</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title">2. Importar Carômetro (Fotos Livres)</h2>
+            <p class="card-text">Faça o upload direto das fotos dos alunos em lote. O sistema usará o nome do arquivo para associar automaticamente ao cadastro do aluno usando um algoritmo de correspondência avançado.</p>
+            
+            <form action="{{ url_for('view_importar') }}" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <input type="file" name="fotos_avulsas" class="form-control" accept="image/*" multiple required>
+                    <small class="text-muted">Selecione as fotos (ex.: FULANO DE TAL DOS SANTOS CICLANO.jpeg).</small>
+                </div>
+                <button type="submit" class="btn btn-warning px-4">Enviar Fotos</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ url_for('listar_turmas') }}" class="btn btn-outline-secondary">Voltar ao Início</a>
+    </div>
+
+    <script>
+        function toggleTurmaInput() {
+            var selector = document.getElementById('turma_selector');
+            var newTurmaSection = document.getElementById('new_turma_section');
+            var nomeInput = document.getElementById('nome_turma');
+            
+            if (selector.value === 'nova') {
+                newTurmaSection.style.display = 'block';
+                nomeInput.required = false; // Opcional, o sistema pega o nome da aba se vazio
+            } else {
+                newTurmaSection.style.display = 'none';
+                nomeInput.required = false;
+            }
+        }
+        toggleTurmaInput();
+    </script>
+{% endblock %}

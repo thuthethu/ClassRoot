@@ -1,0 +1,18 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Confirmação</h2>
+<p>{{ mensagem }}</p>
+
+<form method="POST" action="{{ acao_url }}">
+    {% if aluno_id %}
+        <input type="hidden" name="aluno_id" value="{{ aluno_id }}">
+    {% endif %}
+    {% if nova_turma_id %}
+        <input type="hidden" name="nova_turma_id" value="{{ nova_turma_id }}">
+    {% endif %}
+    <button type="submit" name="confirmar" value="sim">Sim</button>
+    <a href="{{ voltar_url }}"><button type="button">Cancelar</button></a>
+</form>
+{% endblock %}

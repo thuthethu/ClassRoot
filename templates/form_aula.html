@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Nova Aula{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Criar Nova Aula</h2>
+
+<form method="POST" action="/nova_aula/{{ turma_id }}">
+
+    <div class="mb-3">
+        <label class="form-label">Data</label>
+        <input type="date" name="data" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Descrição da aula</label>
+        <input type="text" name="descricao" class="form-control">
+    </div>
+
+    <div class="form-check mb-3">
+        <input type="checkbox" name="teve_dever" class="form-check-input">
+        <label class="form-check-label">Teve dever de casa?</label>
+    </div>
+
+    <button type="submit" class="btn btn-success">Criar Aula</button>
+    <a href="/" class="btn btn-secondary">Cancelar</a>
+
+</form>
+{% endblock %}

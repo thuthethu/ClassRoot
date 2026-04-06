@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Aula {{ aula_id }}{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][name^="presente_"]');
+    
+    checkboxes.forEach(cb => {
+        const registroId = cb.name.split('_')[1];
+        const rowInputs = document.querySelectorAll(`input[name$="_${registroId}"]:not([name^="presente_"])`);
+        
+        function updateState() {
+            if (!cb.checked) {
+                rowInputs.forEach(input => {
+                    if (input.type === 'checkbox') {
+                        input.checked = false;
+                        input.disabled = true;
+                    } else if (input.type === 'text') {
+                        // Não desabilita o texto de observação, caso o professor queira anotar o motivo da falta
+                    }
+                });
+            } else {
+                rowInputs.forEach(input => {
+                    input.disabled = false;
+                });
+            }
+        }
+        
+        cb.addEventListener('change', updateState);
+        updateState(); // Roda ao carregar a página
+    });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<style>
+  .tooltip-container {
+    position: relative;
+    display: inline-block;
+    cursor: default;
+  }
+
+  .tooltip-container .tooltip-img {
+    visibility: hidden;
+    position: absolute;
+    z-index: 100;
+    top: -20px;
+    left: 105%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    border: 2px solid white;
+  }
+
+  .tooltip-container:hover .tooltip-img {
+    visibility: visible;
+  }
+</style>
+<h2 class="mb-4">Aula {{ aula_id }}</h2>
+
+<form method="POST">
+
+  <table class="table table-bordered">
+    <thead class="table-dark">
+      <tr>
+        <th>Aluno</th>
+        <th>Presente</th>
+        <th>Atividade</th>
+        <th>Comportamento</th>
+        <th>Dever feito</th>
+        <th>Copiou o quadro</th>
+        <th>Observações</th>
+        <th>Bônus</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in registros %}
+      <tr
+        class="{% if r.tipo_nee %}{% if 'TEA' in r.tipo_nee.upper() %}nee-tea{% elif 'AH/SD' in r.tipo_nee.upper() %}nee-ahsd{% elif 'TDAH' in r.tipo_nee.upper() %}nee-tdah{% elif 'DI' in r.tipo_nee.upper() %}nee-di{% elif 'TOD' in r.tipo_nee.upper() %}nee-tod{% elif 'TPAC' in r.tipo_nee.upper() %}nee-tpac{% else %}nee-outros{% endif %}{% endif %}">
+        <td>
+          <div class="tooltip-container">
+            {{ r.aluno }}
+            {% if r.foto %}
+            <img src="{{ url_for('static', filename='fotos_alunos/' ~ r.foto) }}" class="tooltip-img" alt="Foto">
+            {% endif %}
+          </div>
+        </td>
+
+        <td><input type="checkbox" name="presente_{{ r.id }}" {% if r.presente %}checked{% endif %}></td>
+
+        <td><input type="checkbox" name="atividade_{{ r.id }}" {% if r.fez_atividade %}checked{% endif %}></td>
+
+        <td><input type="checkbox" name="comportamento_{{ r.id }}" {% if r.comportamento %}checked{% endif %}></td>
+
+        <td><input type="checkbox" name="dever_{{ r.id }}" {% if r.dever_passado_feito %}checked{% endif %}></td>
+
+        <td><input type="checkbox" name="copiou_{{ r.id }}" {% if r.copiou_quadro %}checked{% endif %}></td>
+
+        <td>
+          <input type="text" name="obs_{{ r.id }}" value="{{ r.observacoes or '' }}" class="form-control">
+        </td>
+
+        <td>
+          <input type="checkbox" name="bonus_{{ r.id }}" {% if r.bonus %}checked{% endif %}>
+        </td>
+      </tr>
+
+      <input type="hidden" name="registro_{{ r.id }}" value="1">
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mb-3">
+    <label class="form-label">Observações gerais da aula</label>
+    <textarea name="observacoes_pos_aula" class="form-control" rows="4">{{ observacoes_aula or '' }}</textarea>
+  </div>
+
+  <button type="submit" class="btn btn-success">Salvar</button>
+  <a href="/confirmar_exclusao/{{ aula_id }}" class="btn btn-danger">Excluir Aula</a>
+  <a href="/" class="btn btn-secondary">Voltar</a>
+
+</form>
+
+{% endblock %}

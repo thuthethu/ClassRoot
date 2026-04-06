@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Minhas Turmas ({{ turmas|length }})</h2>
+    <div>
+        <a href="{{ url_for('view_importar') }}" class="btn btn-primary shadow-sm">
+            <i class="bi bi-cloud-upload"></i> Importação de dados
+        </a>
+        <a href="{{ url_for('listar_aulas') }}" class="btn btn-secondary shadow-sm">
+            <i class="bi bi-list-check"></i> Ver aulas já criadas
+        </a>
+    </div>
+</div>
+
+<hr>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="row">
+    {% for turma in turmas %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm border-0 border-top border-primary border-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0 text-primary">{{ turma.nome }}</h5>
+                    <span class="badge bg-light text-dark">{{ turma.ano }}</span>
+                </div>
+                <p class="card-text text-muted small">Gerencie frequência, alunos e NEE.</p>
+                
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('form_aula', turma_id=turma.id) }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-plus-circle"></i> Criar Aula
+                    </a>
+                    <div class="btn-group">
+                        <a href="{{ url_for('alunos_turma', turma_id=turma.id) }}" class="btn btn-outline-primary btn-sm">Alunos</a>
+                        <a href="{{ url_for('gerenciar_nee', turma_id=turma.id) }}" class="btn btn-outline-info btn-sm">NEE</a>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 d-flex justify-content-end">
+                <a href="{{ url_for('confirmar_exclusao_turma', turma_id=turma.id) }}" class="btn btn-link btn-sm text-danger text-decoration-none">
+                    <i class="bi bi-trash"></i> Excluir Turma
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not turmas %}
+<div class="alert alert-light text-center py-5 border">
+    <p class="mb-0 text-muted">Nenhuma turma cadastrada. Use o botão de <strong>Importação de dados</strong> para começar.</p>
+</div>
+{% endif %}
+
+{% endblock %}

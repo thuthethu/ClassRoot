@@ -1,0 +1,24 @@
+# Lixo do Python que não serve para o GitHub
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Pastas de Gerar Executável (são geradas de novo na VM)
+build/
+dist/
+*.spec
+
+# Pastas de uso individual (Fotos e PDFs reais de cada professor)
+# Mantemos as pastas, mas ignoramos o conteúdo "real" que não é exemplo
+static/fotos_alunos/*.jpg
+static/fotos_alunos/*.jpeg
+static/fotos_alunos/*.png
+static/relatorios_nee/*.pdf
+
+# Permitir que os arquivos de exemplo continuem no Git
+!static/fotos_alunos/.gitkeep
+!static/relatorios_nee/.gitkeep
+
+# Arquivos temporários do Sistema Operacional
+.DS_Store
+Thumbs.db

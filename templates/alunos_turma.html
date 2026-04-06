@@ -1,0 +1,91 @@
+
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Alunos{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Gerenciar Alunos da Turma</h2>
+
+<!-- Alunos Matriculados -->
+<h3>Matrículados</h3>
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Remover</th>
+            <th>Trocar Turma</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for aluno in matriculados %}
+        <tr class="{% if aluno.tipo_nee %}{% if 'TEA' in aluno.tipo_nee.upper() %}nee-tea{% elif 'AH/SD' in aluno.tipo_nee.upper() %}nee-ahsd{% elif 'TDAH' in aluno.tipo_nee.upper() %}nee-tdah{% elif 'DI' in aluno.tipo_nee.upper() %}nee-di{% elif 'TOD' in aluno.tipo_nee.upper() %}nee-tod{% elif 'TPAC' in aluno.tipo_nee.upper() %}nee-tpac{% else %}nee-outros{% endif %}{% endif %}">
+            <td>{{ aluno.nome }} {% if aluno.cid %}<small class="text-muted">({{ aluno.cid }})</small>{% endif %}</td>
+            <td>
+                <form method="POST" action="{{ url_for('remover_aluno_rota', turma_id=turma_id, aluno_id=aluno.id) }}">
+                    <button type="submit" class="btn btn-sm btn-danger">Remover</button>
+                </form>
+            </td>
+            <td>
+                <form method="POST" action="{{ url_for('trocar_turma_rota', turma_id=turma_id, aluno_id=aluno.id) }}" class="d-flex">
+                    <select name="nova_turma_id" class="form-select form-select-sm me-2">
+                        <option value="manter">MANTER</option>
+                        {% for t in outras_turmas %}
+                            <option value="{{ t.id }}">{{ t.descricao }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary">Trocar</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Adicionar Aluno Existente -->
+<h3>Adicionar Aluno Existente</h3>
+<form method="POST" action="{{ url_for('adicionar_aluno', turma_id=turma_id) }}" class="row g-2 align-items-center mb-4">
+    <div class="col-auto">
+        <select name="aluno_id" class="form-select">
+            {% for aluno in disponiveis %}
+                <option value="{{ aluno.id }}">{{ aluno.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-success">Adicionar</button>
+    </div>
+</form>
+
+<!-- Adicionar Aluno Novo -->
+<h3>Adicionar Aluno Novo</h3>
+<form method="POST" action="{{ url_for('novo_aluno', turma_id=turma_id) }}" class="mb-4">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <input type="text" name="nome" placeholder="Nome do aluno" required class="form-control">
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="observacoes" placeholder="Observações Gerais" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <input type="date" name="data_inicio" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="cid" placeholder="CID (ex: F84.0)" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="tipo_nee" placeholder="Tipo de NEE (ex: TEA, TDAH)" class="form-control">
+        </div>
+        <div class="col-md-4 d-flex align-items-center">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="pcd" id="pcdCheck">
+                <label class="form-check-label" for="pcdCheck">
+                    PCD / NEE
+                </label>
+            </div>
+            <button type="submit" class="btn btn-success ms-auto">Criar Estudante</button>
+        </div>
+    </div>
+</form>
+
+<a href="{{ url_for('listar_turmas') }}" class="btn btn-secondary">Voltar para turmas</a>
+{% endblock %}
